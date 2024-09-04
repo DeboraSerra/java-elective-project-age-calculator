@@ -11,12 +11,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * The type Age calcutor controller.
+ */
 @RestController
 @RequestMapping(value = "/calculateAge")
 public class AgeCalcutorController implements AgeCalculatorControllerInterface {
 
   private final AgeCalculatorService service;
 
+  /**
+   * Instantiates a new Age calcutor controller.
+   *
+   * @param service the service
+   */
   public AgeCalcutorController(AgeCalculatorService service) {
     this.service = service;
   }
@@ -24,9 +32,11 @@ public class AgeCalcutorController implements AgeCalculatorControllerInterface {
   @Override
   @GetMapping
   public ResponseEntity<DateDto> calculateAge(@RequestParam(required = true) String date,
-      @RequestParam(required = false) String orDefaultAge)
+      @RequestParam(required = false, defaultValue = "") String orDefaultAge)
       throws FutureDate, InvalidFormat {
-    int diff = service.calculateAge(date);
+    int diff = !orDefaultAge.isBlank() ? service.calculateAgeWithDefault(date,
+        Integer.parseInt(orDefaultAge))
+        : service.calculateAge(date);
     return ResponseEntity.status(HttpStatus.OK).body(new DateDto(diff));
   }
 }

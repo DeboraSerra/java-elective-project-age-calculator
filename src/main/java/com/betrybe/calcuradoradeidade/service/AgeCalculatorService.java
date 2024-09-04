@@ -14,12 +14,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class AgeCalculatorService {
 
+  /**
+   * Calculate age int.
+   *
+   * @param date the date
+   * @return the int
+   * @throws FutureDate    the future date
+   * @throws InvalidFormat the invalid format
+   */
   public int calculateAge(String date) throws FutureDate, InvalidFormat {
     Pattern charRegex = Pattern.compile("[a-z]", Pattern.CASE_INSENSITIVE);
     Pattern expectedRegex = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
-    System.out.println(date);
-    System.out.println(expectedRegex.matcher(date));
-    System.out.println(expectedRegex.matcher(date).find());
     if (charRegex.matcher(date).find()) {
       throw new InvalidFormat("Date should be in numeric format.");
     }
@@ -35,8 +40,28 @@ public class AgeCalculatorService {
     return diff.getYears();
   }
 
+  /**
+   * Calculate age with default int.
+   *
+   * @param date       the date
+   * @param defaultAge the default age
+   * @return the int
+   */
   public int calculateAgeWithDefault(String date, int defaultAge) {
-    // TODO method implementation
-    return -1;
+    Pattern charRegex = Pattern.compile("[a-z]", Pattern.CASE_INSENSITIVE);
+    Pattern expectedRegex = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
+    if (charRegex.matcher(date).find()) {
+      return defaultAge;
+    }
+    if (!expectedRegex.matcher(date).find()) {
+      return defaultAge;
+    }
+    LocalDate then = LocalDate.parse(date);
+
+    Period diff = Period.between(then, LocalDate.now());
+    if (diff.getYears() < 0) {
+      return defaultAge;
+    }
+    return diff.getYears();
   }
 }
